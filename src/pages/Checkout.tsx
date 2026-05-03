@@ -123,13 +123,6 @@ const Checkout = () => {
                           value={formData.city} onChange={handleInputChange}
                         />
                       </div>
-                      <div>
-                        <Label htmlFor="zipCode">ZIP Code</Label>
-                        <Input
-                          type="text" id="zipCode" name="zipCode"
-                          value={formData.zipCode} onChange={handleInputChange}
-                        />
-                      </div>
                     </div>
                     <div>
                       <Label htmlFor="country">Country</Label>
