@@ -52,14 +52,14 @@ const HeroSection = () => {
 
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link to="/products">
+              <Link to="/Electronics">
                 <Button variant="hero" size="lg" className="group">
                   Shop Now
                   <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
               
-              <Link to="/products">
+              <Link to="/Deals">
                 <Button variant="outline" size="lg" className="border-2">
                   Explore Categories
                 </Button>
