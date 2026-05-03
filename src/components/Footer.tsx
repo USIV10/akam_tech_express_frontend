@@ -53,7 +53,7 @@ const Footer = () => {
                 <span className="text-white font-bold text-lg">AT</span>
               </div>
               <div>
-                <h1 className="text-xl font-bold text-white">AkemTech</h1>
+                <h1 className="text-xl font-bold text-white">AkamTech</h1>
                 <p className="text-xs text-primary-foreground/80 -mt-1">EXPRESS</p>
               </div>
             </div>
@@ -140,7 +140,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="h-4 w-4 text-accent-electric" />
-                <span className="text-primary-foreground/80">support@akemtech.com</span>
+                <span className="text-primary-foreground/80">support@akamtech.com</span>
               </div>
             </div>
 
@@ -165,7 +165,7 @@ const Footer = () => {
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="text-sm text-primary-foreground/80">
-              © 2025 AkemTech Express. All rights reserved.
+              © 2026 AkamTech Express. All rights reserved.
             </div>
             <div className="flex items-center space-x-6 text-sm">
               <a href="#" className="text-primary-foreground/80 hover:text-white transition-colors">
