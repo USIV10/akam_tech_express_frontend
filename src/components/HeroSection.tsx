@@ -4,9 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Zap, Truck, Shield, Star, Timer, LucideTimer, TimerIcon } from "lucide-react";
 import heroImage from "@/assets/headphones-hero.jpg";
-import { time } from 'console';
-import { TIMEOUT } from 'dns/promises';
-import { getTime } from 'date-fns';
 
 const HeroSection = () => {
   return (
@@ -81,7 +78,7 @@ const HeroSection = () => {
                 </Badge>
               </div>
               <div className="text-sm text-muted-foreground">
-              <span className="font-mono font-bold text-foreground"><Timer/></span>Ends in: 24hrs
+              <span className="font-mono font-bold text-foreground">⏱ </span>Ends in: 24hrs
               </div>
             </div>
           </div>
