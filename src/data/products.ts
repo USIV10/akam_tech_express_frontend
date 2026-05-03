@@ -498,3 +498,5 @@ export const getFeaturedProducts = (): Product[] => {
     product.id === 13   // AirPods Pro (Popular)
   );
 };
+
+export const getAllProducts = () => allProducts;
