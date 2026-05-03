@@ -152,9 +152,11 @@ const FeaturedProducts = () => {
                         <ShoppingCart className="h-4 w-4 mr-2" />
                         Add to Cart
                       </Button>
-                      <Button variant="premium" className="flex-1">
-                        Buy Now
-                      </Button>
+                     <Link to={`/product/${product.id}`} onClick={(e) => e.stopPropagation()}>
+                        <Button variant="premium" className="flex-1 w-full">
+                          Buy Now
+                        </Button>
+                      </Link>
                     </div>
                   </div>
                 </CardContent>
