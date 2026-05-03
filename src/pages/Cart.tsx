@@ -28,7 +28,7 @@ export default function Cart() {
           <p className="text-lg text-gray-600">Review your items and proceed to checkout</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Cart Items */}
           <div className="lg:col-span-2">
             <Card>
@@ -39,60 +39,62 @@ export default function Cart() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {cartItems.length === 0 ? (
-                  <div className="text-center py-12">
-                    <p className="text-lg text-gray-600">Your cart is empty.</p>
-                    <Link to="/">
-                      <Button variant="outline" className="mt-4">
-                        Start Shopping
-                      </Button>
-                    </Link>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {cartItems.map((item) => (
-                      <div key={item.id} className="flex items-center space-x-4 p-4 border rounded-lg">
-                        <img
-                          src={item.image}
-                          alt={item.name}
-                          className="w-20 h-20 object-cover rounded"
-                        />
-                        <div className="flex-1">
-                          <h3 className="font-semibold">{item.name}</h3>
-                          <p className="text-lg font-bold text-accent-electric">
-                            ₵{item.price}
-                          </p>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                            disabled={item.quantity <= 1}
-                          >
-                            <Minus className="h-4 w-4" />
-                          </Button>
-                          <span className="w-8 text-center">{item.quantity}</span>
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          >
-                            <Plus className="h-4 w-4" />
-                          </Button>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="text-red-500"
-                          onClick={() => removeFromCart(item.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                )}
+  {cartItems.length === 0 ? (
+    <div className="text-center py-12">
+      <p className="text-lg text-gray-600">Your cart is empty.</p>
+      <Link to="/">
+        <Button variant="outline" className="mt-4">
+          Start Shopping
+        </Button>
+      </Link>
+    </div>
+  ) : (
+    <div className="space-y-4">
+      {cartItems.map((item) => (
+        <div key={item.id} className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 border rounded-lg">
+          <img
+            src={item.image}
+            alt={item.name}
+            className="w-full sm:w-20 h-40 sm:h-20 object-cover rounded"
+          />
+          <div className="flex-1 w-full">
+            <div className="flex justify-between items-start">
+              <h3 className="font-semibold">{item.name}</h3>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-red-500 -mt-1"
+                onClick={() => removeFromCart(item.id)}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+            <p className="text-lg font-bold text-accent-electric">₵{item.price}</p>
+            <div className="flex items-center space-x-2 mt-2">
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                disabled={item.quantity <= 1}
+              >
+                <Minus className="h-3 w-3" />
+              </Button>
+              <span className="w-8 text-center font-medium">{item.quantity}</span>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => updateQuantity(item.id, item.quantity + 1)}
+              >
+                <Plus className="h-3 w-3" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  )}
               </CardContent>
             </Card>
           </div>
