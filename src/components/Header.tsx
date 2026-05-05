@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '@/context/CartContext';
 import { Button } from "@/components/ui/button";
@@ -6,13 +6,39 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { 
   Search, ShoppingCart, User, Menu, Heart,
-  Phone, Mail, X, Home, Zap, LogOut
+  Phone, Mail, X, Home, Package, LogOut,
+  Monitor, Laptop, Smartphone, Headphones
 } from "lucide-react";
+import SessionManager from '@/utils/sessionManager';
 
 const Header = () => {
   const { cartItems } = useCart();
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [sessionStatus, setSessionStatus] = useState('');
+
+  useEffect(() => {
+    // Update session status periodically
+    const updateSessionStatus = () => {
+      if (SessionManager.isLoggedIn()) {
+        const timeRemaining = SessionManager.getTimeRemainingDisplay();
+        const isExpiringSoon = SessionManager.isSessionExpiringSoon();
+        
+        if (isExpiringSoon) {
+          setSessionStatus(`Session expires in ${timeRemaining}`);
+        } else {
+          setSessionStatus(`Session active (${timeRemaining} remaining)`);
+        }
+      } else {
+        setSessionStatus('Not logged in');
+      }
+    };
+
+    updateSessionStatus();
+    const interval = setInterval(updateSessionStatus, 60000); // Update every minute
+
+    return () => clearInterval(interval);
+  }, []);
 
   const handleLogout = () => {
     if ((window as any).handleLogout) {
@@ -37,6 +63,9 @@ const Header = () => {
               </div>
             </div>
             <div className="flex items-center space-x-4">
+              <div className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full">
+                {sessionStatus}
+              </div>
               <span>Free delivery on orders over ₵500</span>
               <Badge variant="secondary" className="bg-gradient-electric text-white">
                 New Arrivals
@@ -137,7 +166,7 @@ const Header = () => {
             <Link to="/Laptops" className="text-muted-foreground hover:text-accent-electric transition-colors">Laptops</Link>
             <Link to="/Phones" className="text-muted-foreground hover:text-accent-electric transition-colors">Phones</Link>
             <Link to="/Accessories" className="text-muted-foreground hover:text-accent-electric transition-colors">Accessories</Link>
-            <Link to="/Deals" className="text-accent-electric font-medium">Deals 🔥</Link>
+            <Link to="/Deals" className="text-accent-electric font-medium">Deals</Link>
           </nav>
         </div>
       </div>
@@ -152,23 +181,23 @@ const Header = () => {
             </Link>
             <Link to="/Electronics" onClick={() => setMobileMenuOpen(false)}
               className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-muted transition-colors text-sm">
-              <span>⚡</span> <span>Electronics</span>
+              <Monitor className="h-4 w-4" /> <span>Electronics</span>
             </Link>
             <Link to="/Laptops" onClick={() => setMobileMenuOpen(false)}
               className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-muted transition-colors text-sm">
-              <span>💻</span> <span>Laptops</span>
+              <Laptop className="h-4 w-4" /> <span>Laptops</span>
             </Link>
             <Link to="/Phones" onClick={() => setMobileMenuOpen(false)}
               className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-muted transition-colors text-sm">
-              <span>📱</span> <span>Phones</span>
+              <Smartphone className="h-4 w-4" /> <span>Phones</span>
             </Link>
             <Link to="/Accessories" onClick={() => setMobileMenuOpen(false)}
               className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-muted transition-colors text-sm">
-              <span>🎧</span> <span>Accessories</span>
+              <Headphones className="h-4 w-4" /> <span>Accessories</span>
             </Link>
             <Link to="/Deals" onClick={() => setMobileMenuOpen(false)}
               className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-muted transition-colors text-sm text-accent-electric font-medium">
-              <Zap className="h-4 w-4" /> <span>Deals 🔥</span>
+              <Package className="h-4 w-4" /> <span>Deals</span>
             </Link>
             <div className="border-t border-border pt-2 mt-2 space-y-1">
               <Link to="/account" onClick={() => setMobileMenuOpen(false)}

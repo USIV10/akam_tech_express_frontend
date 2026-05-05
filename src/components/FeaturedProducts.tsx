@@ -4,7 +4,7 @@ import { useCart } from '@/context/CartContext';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Heart, ShoppingCart, Star, Eye } from "lucide-react";
+import { Star, Heart, ShoppingCart, Eye, CheckCircle, XCircle } from 'lucide-react';
 import { getFeaturedProducts } from '@/data/products';
 
 const products = getFeaturedProducts();
@@ -127,8 +127,18 @@ const FeaturedProducts = () => {
 
                     {/* Stock Status */}
                     <div className="flex items-center justify-between">
-                      <span className={`text-sm ${product.inStock ? 'text-success' : 'text-destructive'}`}>
-                        {product.inStock ? '✓ In Stock' : '✗ Out of Stock'}
+                      <span className={`text-sm ${product.inStock ? 'text-success' : 'text-destructive'} flex items-center`}>
+                        {product.inStock ? (
+                          <>
+                            <CheckCircle className="w-4 h-4 mr-1" />
+                            In Stock
+                          </>
+                        ) : (
+                          <>
+                            <XCircle className="w-4 h-4 mr-1" />
+                            Out of Stock
+                          </>
+                        )}
                       </span>
                       <span className="text-sm text-muted-foreground">Only 3 left!</span>
                     </div>

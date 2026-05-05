@@ -8,6 +8,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
 import { Link } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
+import AuthPopup from '@/components/AuthPopup';
+import axios from 'axios';
 
 const Login = ({handleLogin}) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -16,19 +18,44 @@ const Login = ({handleLogin}) => {
     password: '',
     rememberMe: false,
   });
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupType, setPopupType] = useState<'user-exists' | 'user-not-found' | 'login-success' | null>(null);
+  const [popupEmail, setPopupEmail] = useState('');
+  const [popupUserName, setPopupUserName] = useState('');
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-   const handleSubmit = (event) => {
+   const handleSubmit = async (event) => {
       event.preventDefault(); // Prevent form submission from refreshing the page
-    // Placeholder for Login Form
-    const email = event.target.email.value;
-    const password = event.target.password.value;
+      const email = formData.email;
+      const password = formData.password;
   
-    // Call the handleLogin function passed from the parent
-    handleLogin(email, password);
+      try {
+        await handleLogin(email, password);
+        // Show success popup
+        setPopupType('login-success');
+        setPopupEmail(email);
+        // Extract user name from email or use a default
+        const userName = email.split('@')[0];
+        setPopupUserName(userName.charAt(0).toUpperCase() + userName.slice(1));
+        setShowPopup(true);
+      } catch (error: any) {
+        // Check for specific error types
+        if (error.response?.data?.message?.includes('already exists')) {
+          setPopupType('user-exists');
+          setPopupEmail(email);
+          setShowPopup(true);
+        } else if (error.response?.data?.message?.includes('not found')) {
+          setPopupType('user-not-found');
+          setPopupEmail(email);
+          setShowPopup(true);
+        } else {
+          // Show generic error
+          alert(error.response?.data?.message || 'Login failed');
+        }
+      }
     };
 
 
@@ -120,21 +147,20 @@ const Login = ({handleLogin}) => {
               </div>
 
               <div className="relative my-6">
-                <div className="absolute inset-0 flex items-center">
-                  <Separator />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-full border-t border-gray-300"></div>
                 </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">Or continue with</span>
+                <div className="relative text-center text-sm text-gray-500">
+                  Or continue with
                 </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <Button variant="outline" className="w-full">
-                  Google
-                </Button>
-                <Button variant="outline" className="w-full">
-                  Facebook
-                </Button>
+                <div className="grid grid-cols-2 gap-3">
+                  <Button variant="outline" className="w-full">
+                    Google
+                  </Button>
+                  <Button variant="outline" className="w-full">
+                    Facebook
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -142,6 +168,18 @@ const Login = ({handleLogin}) => {
       </main>
 
       <Footer />
+      <AuthPopup
+        isOpen={showPopup}
+        onClose={() => {
+          setShowPopup(false);
+          setPopupType(null);
+          setPopupEmail('');
+          setPopupUserName('');
+        }}
+        type={popupType}
+        email={popupEmail}
+        userName={popupUserName}
+      />
     </div>
   );
 };

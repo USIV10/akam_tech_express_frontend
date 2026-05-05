@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Check, CreditCard, Truck, User, Lock } from 'lucide-react';
+import { Check, CreditCard, Truck, User, Lock, CheckCircle } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import axios from 'axios';
 
@@ -290,7 +290,10 @@ const Checkout = () => {
                   </div>
                   <div className="mt-4 text-sm text-gray-600">
                     {shipping === 0 && (
-                      <p className="text-green-600 font-medium">✓ Free shipping on orders over ₵500</p>
+                      <p className="text-green-600 font-medium flex items-center">
+                        <CheckCircle className="w-4 h-4 mr-1" />
+                        Free shipping on orders over ₵500
+                      </p>
                     )}
                     <p className="mt-2">{cartItems.length} items in cart</p>
                   </div>

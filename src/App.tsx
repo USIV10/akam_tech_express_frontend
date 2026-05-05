@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useState } from "react";
+import React, { Suspense, lazy, useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { CartProvider, useCart } from "./context/CartContext";
 import LoadingSpinner from "./components/ui/LoadingSpinner";
 import SignupSuccessModal from "./components/SignupSuccessModal";
+import SessionManager from "./utils/sessionManager";
 import axios from 'axios';
 
 
@@ -38,6 +39,16 @@ const AppWithCartSync = () => {
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [registeredUserName, setRegisteredUserName] = useState('');
 
+  // Check session on mount and handle expired sessions
+  useEffect(() => {
+    const session = SessionManager.getSession();
+    if (!session) {
+      // Session expired or doesn't exist
+      console.log('Session expired or not found');
+      SessionManager.clearSession();
+    }
+  }, []);
+
   const handleRegister = async (firstName, lastName, email, password) => {
     try {
       const response = await axios.post('/api/auth/register', {
@@ -63,10 +74,10 @@ const AppWithCartSync = () => {
         password,
       });
     
-      const { token } = response.data;
+      const { token, user } = response.data;
 
-      // Store the JWT token
-      localStorage.setItem('token', token);
+      // Save session with extended duration
+      SessionManager.saveSession(token, user);
       
       // Sync cart with server after login
       await syncCartWithServer();
@@ -80,15 +91,21 @@ const AppWithCartSync = () => {
   };
 
   const handleLogout = () => {
-    // Clear token and sync cart as guest
-    localStorage.removeItem('token');
+    // Clear session and sync cart as guest
+    SessionManager.clearSession();
     syncCartWithServer();
-    window.location.href = '/login';
+    
+    // Optional: Show logout confirmation
+    const confirmLogout = window.confirm('Are you sure you want to sign out?');
+    if (confirmLogout) {
+      window.location.href = '/login';
+    }
   };
 
   // Add logout function to window for global access
-  React.useEffect(() => {
+  useEffect(() => {
     (window as any).handleLogout = handleLogout;
+    (window as any).SessionManager = SessionManager;
   }, []);
 
   return (
