@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from "react";
+import React, { Suspense, lazy, useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { CartProvider } from "./context/CartContext";
 import LoadingSpinner from "./components/ui/LoadingSpinner";
+import SignupSuccessModal from "./components/SignupSuccessModal";
 import axios from 'axios';
 
 
@@ -31,6 +32,8 @@ const queryClient = new QueryClient();
 axios.defaults.baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const App = () => {
+  const [showSignupModal, setShowSignupModal] = useState(false);
+  const [registeredUserName, setRegisteredUserName] = useState('');
 
   const handleRegister = async (firstName, lastName, email, password) => {
     try {
@@ -41,8 +44,9 @@ const App = () => {
         password,
       });
 
-      alert(response.data.message || 'Registration successful!');
-      window.location.href = '/login';
+      // Show success modal with user's first name
+      setRegisteredUserName(firstName);
+      setShowSignupModal(true);
     } catch (error) {
       console.error('Registration error:', error.response?.data?.message || 'An error occurred');
       alert(error.response?.data?.message || 'An error occurred');
@@ -100,6 +104,13 @@ return(
           </Suspense>
         </BrowserRouter>
       </CartProvider>
+      
+      {/* Signup Success Modal */}
+      <SignupSuccessModal
+        isOpen={showSignupModal}
+        onClose={() => setShowSignupModal(false)}
+        userName={registeredUserName}
+      />
     </TooltipProvider>
   </QueryClientProvider>
 );
