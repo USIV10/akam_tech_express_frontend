@@ -9,9 +9,11 @@ import { Separator } from '@/components/ui/separator';
 import { Trash2, Plus, Minus, ShoppingCart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCart } from '@/context/CartContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function Cart() {
   const { cartItems, updateQuantity, removeFromCart } = useCart();
+  const navigate = useNavigate();
 
   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const shipping = 15.00;
@@ -42,11 +44,13 @@ export default function Cart() {
   {cartItems.length === 0 ? (
     <div className="text-center py-12">
       <p className="text-lg text-gray-600">Your cart is empty.</p>
-      <Link to="/">
-        <Button variant="outline" className="mt-4">
-          Start Shopping
-        </Button>
-      </Link>
+      <Button 
+        variant="outline" 
+        className="mt-4"
+        onClick={() => navigate('/home')}
+      >
+        Continue Shopping
+      </Button>
     </div>
   ) : (
     <div className="space-y-4">

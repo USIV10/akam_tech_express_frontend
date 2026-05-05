@@ -9,7 +9,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Users, ShoppingCart, Package, TrendingUp, 
   Search, Filter, Eye, Edit, Trash2,
-  Mail, Phone, MapPin, Calendar
+  Mail, Phone, MapPin, Calendar,
+  Plus, Minus, AlertTriangle, Bell
 } from 'lucide-react';
 import axios from 'axios';
 
@@ -288,14 +289,86 @@ const Admin = () => {
             </Card>
           </TabsContent>
 
-          {/* Other tabs would be implemented similarly */}
+          {/* Products Management Tab */}
+          <TabsContent value="products">
+            <Card>
+              <CardHeader>
+                <CardTitle>Product Management</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {/* Add Product Form */}
+                  <div className="border rounded-lg p-4 bg-gray-50">
+                    <h3 className="text-lg font-semibold mb-4">Add New Product</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Product Name</label>
+                        <input
+                          type="text"
+                          className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500"
+                          placeholder="Enter product name"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Price</label>
+                        <input
+                          type="number"
+                          className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500"
+                          placeholder="0.00"
+                        />
+                      </div>
+                    </div>
+                    <Button className="w-full mt-4">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Product
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Orders Tab with Alerts */}
           <TabsContent value="orders">
             <Card>
               <CardHeader>
-                <CardTitle>Order Management</CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle>Order Management</CardTitle>
+                  <div className="flex items-center space-x-2">
+                    <Bell className="h-5 w-5 text-yellow-500" />
+                    <span className="text-sm text-gray-500">New orders will appear here</span>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-500">Order management functionality coming soon...</p>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div className="flex items-center space-x-3">
+                      <AlertTriangle className="h-8 w-8 text-blue-600" />
+                      <div>
+                        <p className="font-medium text-blue-900">Order Alert System</p>
+                        <p className="text-sm text-blue-700">New orders will trigger notifications here</p>
+                      </div>
+                    </div>
+                    <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                      3 New Orders
+                    </Badge>
+                  </div>
+                  
+                  {/* Sample Order Items */}
+                  <div className="space-y-2">
+                    <div className="border rounded p-3 bg-white">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <p className="font-medium">Order #12345</p>
+                          <p className="text-sm text-gray-500">Just placed - 2 minutes ago</p>
+                        </div>
+                        <Badge className="bg-green-100 text-green-800">New</Badge>
+                      </div>
+                      <p className="text-sm">Laptop Pro x1 - ₵1,299.99</p>
+                    </div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
