@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,34 +6,116 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Check, CreditCard, Truck, User } from 'lucide-react';
+import { Check, CreditCard, Truck, User, Lock } from 'lucide-react';
+import { useCart } from '@/context/CartContext';
+import axios from 'axios';
 
 const Checkout = () => {
+  const { cartItems, clearCart } = useCart();
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({
-    email: '',
+  const [loading, setLoading] = useState(false);
+  const [userData, setUserData] = useState({
     firstName: '',
     lastName: '',
+    email: '',
+    phone: '',
     address: '',
     city: '',
+    state: '',
     zipCode: '',
     country: '',
-    cardNumber: '',
-    expiryDate: '',
-    cvv: '',
   });
 
+  const token = localStorage.getItem('token');
+  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const shipping = subtotal > 500 ? 0 : 15;
+  const tax = subtotal * 0.08;
+  const total = subtotal + shipping + tax;
+
+  useEffect(() => {
+    // Load Paystack script
+    const script = document.createElement('script');
+    script.src = 'https://js.paystack.co/v1/inline.js';
+    script.async = true;
+    document.body.appendChild(script);
+
+    if (token) {
+      // Load user data for logged-in users
+      const loadUserData = async () => {
+        try {
+          const response = await axios.get('/api/user/profile', {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          const user = response.data;
+          setUserData({
+            firstName: user.firstName || '',
+            lastName: user.lastName || '',
+            email: user.email || '',
+            phone: user.phone || '',
+            address: user.address || '',
+            city: user.city || '',
+            state: user.state || '',
+            zipCode: user.zipCode || '',
+            country: user.country || '',
+          });
+        } catch (error) {
+          console.error('Error loading user data:', error);
+        }
+      };
+      loadUserData();
+    }
+  }, [token]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setUserData({ ...userData, [e.target.name]: e.target.value });
   };
 
   const handleNextStep = () => { if (step < 3) setStep(step + 1); };
   const handlePrevStep = () => { if (step > 1) setStep(step - 1); };
 
+  const handlePaystackPayment = async () => {
+    if (cartItems.length === 0) {
+      alert('Your cart is empty');
+      return;
+    }
+
+    setLoading(true);
+    
+    try {
+      // Initialize Paystack payment
+      const paystack = new (window as any).PaystackPop({
+        email: userData.email,
+        amount: total * 100, // Paystack expects amount in kobo (cents)
+        currency: 'GHS',
+        ref: `order_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        callback: function(response) {
+          // Payment successful
+          console.log('Payment successful:', response);
+          clearCart();
+          alert('Payment successful! Order placed.');
+          window.location.href = '/home';
+        },
+        onClose: function() {
+          setLoading(false);
+          console.log('Payment closed');
+        },
+        onOpen: function() {
+          console.log('Payment opened');
+        }
+      });
+
+      paystack.openIframe();
+    } catch (error) {
+      console.error('Payment error:', error);
+      alert('Payment failed. Please try again.');
+      setLoading(false);
+    }
+  };
+
   const steps = [
     { number: 1, title: 'Info', icon: User },
     { number: 2, title: 'Shipping', icon: Truck },
-    { number: 3, title: 'Payment', icon: CreditCard },
+    { number: 3, title: 'Payment', icon: Lock },
   ];
 
   return (
@@ -70,9 +152,9 @@ const Checkout = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg">
-                  {step === 1 && 'Contact Information'}
-                  {step === 2 && 'Shipping Address'}
-                  {step === 3 && 'Payment Details'}
+                  {step === 1 && 'Contact & Shipping Information'}
+                  {step === 2 && 'Order Review'}
+                  {step === 3 && 'Payment'}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -82,7 +164,7 @@ const Checkout = () => {
                       <Label htmlFor="email">Email</Label>
                       <Input
                         type="email" id="email" name="email"
-                        value={formData.email} onChange={handleInputChange}
+                        value={userData.email} onChange={handleInputChange}
                         placeholder="john@example.com"
                       />
                     </div>
@@ -91,14 +173,14 @@ const Checkout = () => {
                         <Label htmlFor="firstName">First Name</Label>
                         <Input
                           type="text" id="firstName" name="firstName"
-                          value={formData.firstName} onChange={handleInputChange}
+                          value={userData.firstName} onChange={handleInputChange}
                         />
                       </div>
                       <div>
                         <Label htmlFor="lastName">Last Name</Label>
                         <Input
                           type="text" id="lastName" name="lastName"
-                          value={formData.lastName} onChange={handleInputChange}
+                          value={userData.lastName} onChange={handleInputChange}
                         />
                       </div>
                     </div>
@@ -111,7 +193,7 @@ const Checkout = () => {
                       <Label htmlFor="address">Address</Label>
                       <Input
                         type="text" id="address" name="address"
-                        value={formData.address} onChange={handleInputChange}
+                        value={userData.address} onChange={handleInputChange}
                         placeholder="123 Main St"
                       />
                     </div>
@@ -120,7 +202,7 @@ const Checkout = () => {
                         <Label htmlFor="city">City</Label>
                         <Input
                           type="text" id="city" name="city"
-                          value={formData.city} onChange={handleInputChange}
+                          value={userData.city} onChange={handleInputChange}
                         />
                       </div>
                     </div>
@@ -128,7 +210,7 @@ const Checkout = () => {
                       <Label htmlFor="country">Country</Label>
                       <Input
                         type="text" id="country" name="country"
-                        value={formData.country} onChange={handleInputChange}
+                        value={userData.country} onChange={handleInputChange}
                         placeholder="Ghana"
                       />
                     </div>
@@ -138,29 +220,20 @@ const Checkout = () => {
                 {step === 3 && (
                   <div className="space-y-4">
                     <div>
-                      <Label htmlFor="cardNumber">Card Number</Label>
+                      <Label htmlFor="phone">Phone</Label>
                       <Input
-                        type="text" id="cardNumber" name="cardNumber"
-                        value={formData.cardNumber} onChange={handleInputChange}
-                        placeholder="1234 5678 9012 3456"
+                        type="tel" id="phone" name="phone"
+                        value={userData.phone} onChange={handleInputChange}
+                        placeholder="+233 540 95051"
                       />
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="expiryDate">Expiry Date</Label>
-                        <Input
-                          type="text" id="expiryDate" name="expiryDate"
-                          value={formData.expiryDate} onChange={handleInputChange}
-                          placeholder="MM/YY"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="cvv">CVV</Label>
-                        <Input
-                          type="text" id="cvv" name="cvv"
-                          value={formData.cvv} onChange={handleInputChange}
-                          placeholder="123"
-                        />
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <div className="flex items-center space-x-3">
+                        <Lock className="h-5 w-5 text-blue-600" />
+                        <div>
+                          <p className="font-medium text-blue-900">Secure Payment with Paystack</p>
+                          <p className="text-sm text-blue-700">Your payment information is encrypted and secure</p>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -173,9 +246,17 @@ const Checkout = () => {
                   {step < 3 ? (
                     <Button onClick={handleNextStep}>Next</Button>
                   ) : (
-                    <Button className="bg-green-600 hover:bg-green-700">
-                      <Check className="w-4 h-4 mr-2" />
-                      Complete Order
+                    <Button 
+                      className="bg-green-600 hover:bg-green-700"
+                      onClick={handlePaystackPayment}
+                      disabled={loading || cartItems.length === 0}
+                    >
+                      {loading ? (
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      ) : (
+                        <Check className="w-4 h-4 mr-2" />
+                      )}
+                      Pay with Paystack
                     </Button>
                   )}
                 </div>
@@ -190,25 +271,29 @@ const Checkout = () => {
                 <CardTitle className="text-lg">Order Summary</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3 text-sm">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Subtotal</span>
-                    <span>₵599.97</span>
+                    <span>₵{subtotal.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Shipping</span>
-                    <span>₵15.00</span>
+                    <span>₵{shipping.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Tax</span>
-                    <span>₵48.00</span>
+                    <span>₵{tax.toFixed(2)}</span>
                   </div>
                   <Separator />
                   <div className="flex justify-between font-bold text-base">
                     <span>Total</span>
-                    <span>₵662.97</span>
+                    <span>₵{total.toFixed(2)}</span>
                   </div>
-                </div>
+                  <div className="mt-4 text-sm text-gray-600">
+                    {shipping === 0 && (
+                      <p className="text-green-600 font-medium">✓ Free shipping on orders over ₵500</p>
+                    )}
+                    <p className="mt-2">{cartItems.length} items in cart</p>
+                  </div>
               </CardContent>
             </Card>
           </div>

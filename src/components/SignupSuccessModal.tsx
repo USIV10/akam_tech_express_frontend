@@ -33,106 +33,56 @@ const SignupSuccessModal = ({ isOpen, onClose, userName }: SignupSuccessModalPro
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-lg border-0 shadow-2xl bg-gradient-to-br from-orange-50 via-white to-purple-50 p-0 overflow-hidden">
-        {/* Shopping-themed animated background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-400 via-pink-500 to-purple-600 opacity-5 animate-pulse" />
-        
-        {/* Shopping bag pattern overlay */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="grid grid-cols-8 gap-4 p-4">
-            {[...Array(32)].map((_, i) => (
-              <ShoppingBag key={i} className="w-4 h-4 text-purple-600" />
-            ))}
-          </div>
-        </div>
-        
-        <div className="relative p-8 text-center">
-          {/* Success animation with shopping bag */}
+      <DialogContent className="sm:max-w-md border shadow-lg bg-white p-6">
+        <div className="text-center">
+          {/* Simple success icon */}
           <div className={cn(
-            "mb-6 transition-all duration-700 transform",
-            showContent ? "scale-100 opacity-100" : "scale-0 opacity-0"
+            "mb-4 transition-opacity duration-300",
+            showContent ? "opacity-100" : "opacity-0"
           )}>
-            <div className="relative inline-block">
-              {/* Outer glow ring */}
-              <div className="absolute inset-0 rounded-full bg-orange-500 opacity-20 animate-ping" />
-              
-              {/* Shopping bag success icon */}
-              <div className="relative rounded-full bg-gradient-to-br from-orange-500 to-purple-600 p-4 shadow-lg">
-                <ShoppingBag className="w-12 h-12 text-white animate-bounce" />
-                <CheckCircle2 className="absolute -bottom-1 -right-1 w-6 h-6 text-green-400 bg-white rounded-full" />
-              </div>
-              
-              {/* Shopping-themed sparkles */}
-              <Gift className="absolute -top-2 -right-2 w-6 h-6 text-yellow-400 animate-spin" />
-              <Star className="absolute -bottom-2 -left-2 w-5 h-5 text-orange-400 animate-spin" style={{ animationDelay: '0.5s' }} />
+            <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+              <CheckCircle2 className="w-8 h-8 text-green-600" />
             </div>
           </div>
 
-          {/* Ecommerce success message */}
+          {/* Simple success message */}
           <div className={cn(
-            "space-y-4 mb-6 transition-all duration-700 delay-100 transform",
-            showContent ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+            "space-y-3 mb-6 transition-opacity duration-300 delay-100",
+            showContent ? "opacity-100" : "opacity-0"
           )}>
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-purple-600 bg-clip-text text-transparent">
-              Welcome to Your Shopping Paradise! 🛍️
+            <h2 className="text-xl font-semibold text-gray-900">
+              Account Created Successfully!
             </h2>
             
-            <p className="text-gray-700 leading-relaxed font-medium">
-              {userName ? `Congratulations, ${userName}!` : 'Congratulations!'} Your account is ready for an amazing shopping experience.
+            <p className="text-gray-600 text-sm">
+              {userName ? `Welcome, ${userName}!` : 'Welcome!'} Your account is ready.
             </p>
             
-            {/* Shopping benefits */}
-            <div className="bg-gradient-to-r from-orange-100 to-purple-100 rounded-xl p-4 border border-orange-200">
-              <div className="grid grid-cols-3 gap-3 text-center">
-                <div className="flex flex-col items-center">
-                  <Gift className="w-6 h-6 text-orange-600 mb-1" />
-                  <span className="text-xs font-semibold text-gray-700">Exclusive Deals</span>
-                </div>
-                <div className="flex flex-col items-center">
-                  <Truck className="w-6 h-6 text-purple-600 mb-1" />
-                  <span className="text-xs font-semibold text-gray-700">Fast Delivery</span>
-                </div>
-                <div className="flex flex-col items-center">
-                  <Shield className="w-6 h-6 text-orange-600 mb-1" />
-                  <span className="text-xs font-semibold text-gray-700">Secure Shopping</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white/70 backdrop-blur-sm rounded-lg p-3 border border-purple-200">
+            <div className="bg-gray-50 rounded-lg p-3 text-left">
               <p className="text-sm text-gray-700">
-                <span className="font-bold text-purple-600">🎉 Special Offer:</span> Sign in now to unlock your 10% welcome discount on your first order!
+                <span className="font-medium">Next step:</span> Sign in to start shopping
               </p>
             </div>
           </div>
 
-          {/* Ecommerce action buttons */}
+          {/* Simple action buttons */}
           <div className={cn(
-            "space-y-3 transition-all duration-700 delay-200 transform",
-            showContent ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+            "space-y-2 transition-opacity duration-300 delay-200",
+            showContent ? "opacity-100" : "opacity-0"
           )}>
             <Button 
               onClick={handleContinue}
-              className="w-full bg-gradient-to-r from-orange-500 to-purple-600 hover:from-orange-600 hover:to-purple-700 text-white font-bold shadow-lg transform transition-all duration-200 hover:scale-105 text-lg py-3"
+              className="w-full bg-black hover:bg-gray-800 text-white"
             >
-              Start Shopping Now
-              <ShoppingBag className="ml-2 w-5 h-5" />
+              Sign In
             </Button>
             
             <button
               onClick={onClose}
-              className="text-sm text-gray-500 hover:text-purple-600 transition-colors duration-200 font-medium"
+              className="w-full text-sm text-gray-500 hover:text-gray-700 transition-colors"
             >
-              Continue browsing later
+              Close
             </button>
-          </div>
-
-          {/* Shopping-themed decorative elements */}
-          <div className="absolute top-4 right-4 w-10 h-10 bg-gradient-to-br from-orange-300 to-pink-400 rounded-full opacity-60 animate-pulse flex items-center justify-center">
-            <Star className="w-5 h-5 text-white" />
-          </div>
-          <div className="absolute bottom-4 left-4 w-8 h-8 bg-gradient-to-br from-purple-300 to-pink-400 rounded-full opacity-60 animate-pulse flex items-center justify-center" style={{ animationDelay: '1s' }}>
-            <Gift className="w-4 h-4 text-white" />
           </div>
         </div>
       </DialogContent>

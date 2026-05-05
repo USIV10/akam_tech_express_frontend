@@ -6,13 +6,19 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { 
   Search, ShoppingCart, User, Menu, Heart,
-  Phone, Mail, X, Home, Zap
+  Phone, Mail, X, Home, Zap, LogOut
 } from "lucide-react";
 
 const Header = () => {
   const { cartItems } = useCart();
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const handleLogout = () => {
+    if ((window as any).handleLogout) {
+      (window as any).handleLogout();
+    }
+  };
 
   return (
     <header className="w-full border-b border-border bg-background/95 backdrop-blur-sm sticky top-0 z-50">
@@ -173,6 +179,15 @@ const Header = () => {
                 className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-muted transition-colors text-sm">
                 <Heart className="h-4 w-4" /> <span>Wishlist</span>
               </Link>
+              <button 
+                onClick={() => {
+                  handleLogout();
+                  setMobileMenuOpen(false);
+                }}
+                className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-muted transition-colors text-sm text-red-600 w-full text-left"
+              >
+                <LogOut className="h-4 w-4" /> <span>Logout</span>
+              </button>
             </div>
           </nav>
         </div>

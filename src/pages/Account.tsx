@@ -80,8 +80,13 @@ const Account = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    window.location.href = '/login';
+    if ((window as any).handleLogout) {
+      (window as any).handleLogout();
+    } else {
+      // Fallback if global handler not available
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+    }
   };
 
   const getStatusColor = (status: string) => {
