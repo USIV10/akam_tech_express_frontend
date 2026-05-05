@@ -10,12 +10,22 @@ import {
   Monitor, Laptop, Smartphone, Headphones
 } from "lucide-react";
 import SessionManager from '@/utils/sessionManager';
+import { useNavigate } from 'react-router-dom';
 
 const Header = () => {
   const { cartItems } = useCart();
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [sessionStatus, setSessionStatus] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
+
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      // Navigate to search results page with query parameter
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
 
   useEffect(() => {
     // Update session status periodically
@@ -97,12 +107,20 @@ const Header = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input 
                 placeholder="Search for products, brands, and more..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSearch();
+                  }
+                }}
                 className="pl-10 pr-24 h-10 border-2 focus:border-accent-electric transition-colors"
               />
               <Button 
                 variant="electric" 
                 size="sm" 
                 className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8"
+                onClick={handleSearch}
               >
                 Search
               </Button>
@@ -152,6 +170,13 @@ const Header = () => {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input 
               placeholder="Search products..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleSearch();
+                }
+              }}
               className="pl-10 pr-4 h-10 w-full"
             />
           </div>

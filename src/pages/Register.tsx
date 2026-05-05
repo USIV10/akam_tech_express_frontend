@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
 import { Link } from 'react-router-dom';
-import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, Chrome, Facebook } from 'lucide-react';
 
 const Register = ({handleRegister}) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -168,11 +168,19 @@ const Register = ({handleRegister}) => {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <Button variant="outline" className="w-full">
-                  Google
+                <Button 
+                  variant="outline" 
+                  className="w-full flex items-center justify-center space-x-2 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200"
+                >
+                  <Chrome className="w-4 h-4" />
+                  <span>Google</span>
                 </Button>
-                <Button variant="outline" className="w-full">
-                  Facebook
+                <Button 
+                  variant="outline" 
+                  className="w-full flex items-center justify-center space-x-2 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200"
+                >
+                  <Facebook className="w-4 h-4 text-blue-600" />
+                  <span>Facebook</span>
                 </Button>
               </div>
             </CardContent>
