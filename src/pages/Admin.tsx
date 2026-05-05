@@ -41,37 +41,12 @@ const Admin = () => {
 
   const fetchUsers = async () => {
     try {
-      // This would be a protected admin endpoint
-      // For now, we'll simulate with mock data
-      const mockUsers: User[] = [
-        {
-          _id: '1',
-          firstName: 'John',
-          lastName: 'Doe',
-          email: 'john@example.com',
-          phone: '+233 540 95051',
-          address: '123 Main St',
-          city: 'Accra',
-          country: 'Ghana',
-          createdAt: '2024-01-15T10:30:00Z',
-          cart: [
-            { id: 1, name: 'Laptop Pro', price: 1299.99, quantity: 1, image: '/laptop.jpg' }
-          ]
-        },
-        {
-          _id: '2',
-          firstName: 'Jane',
-          lastName: 'Smith',
-          email: 'jane@example.com',
-          phone: '+233 540 95052',
-          address: '456 Oak Ave',
-          city: 'Kumasi',
-          country: 'Ghana',
-          createdAt: '2024-01-20T14:20:00Z',
-          cart: []
+      const response = await axios.get('/api/user/all', {
+        headers: {
+          'Authorization': `Bearer ${token}`
         }
-      ];
-      setUsers(mockUsers);
+      });
+      setUsers(response.data);
     } catch (error) {
       console.error('Error fetching users:', error);
     } finally {
@@ -85,12 +60,54 @@ const Admin = () => {
     user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const stats = {
-    totalUsers: users.length,
-    activeUsers: users.filter(u => u.cart && u.cart.length > 0).length,
-    totalOrders: 156, // Mock data
-    totalRevenue: 45678.90 // Mock data
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    activeUsers: 0,
+    totalOrders: 0,
+    totalRevenue: 0,
+    newOrders: 0
+  });
+
+  const [orders, setOrders] = useState([]);
+
+  const fetchStats = async () => {
+    try {
+      const response = await axios.get('/api/user/stats', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      setStats(response.data);
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+    }
   };
+
+  const fetchOrders = async () => {
+    try {
+      const response = await axios.get('/api/user/orders', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      setOrders(response.data);
+      // Update new orders count
+      setStats(prev => ({
+        ...prev,
+        newOrders: response.data.filter((order: any) => 
+          new Date(order.createdAt) > new Date(Date.now() - 24 * 60 * 60 * 1000)
+        ).length
+      }));
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+    fetchStats();
+    fetchOrders();
+  }, []);
 
   if (!token) {
     return (
@@ -351,22 +368,30 @@ const Admin = () => {
                       </div>
                     </div>
                     <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                      3 New Orders
+                      {stats.newOrders} New Orders
                     </Badge>
                   </div>
                   
-                  {/* Sample Order Items */}
+                  {/* Real Order Items */}
                   <div className="space-y-2">
-                    <div className="border rounded p-3 bg-white">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <p className="font-medium">Order #12345</p>
-                          <p className="text-sm text-gray-500">Just placed - 2 minutes ago</p>
+                    {orders.slice(0, 5).map((order: any) => (
+                      <div key={order._id} className="border rounded p-3 bg-white">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <p className="font-medium">Order #{order._id}</p>
+                            <p className="text-sm text-gray-500">
+                              {new Date(order.createdAt).toLocaleDateString()} - {new Date(order.createdAt).toLocaleTimeString()}
+                            </p>
+                          </div>
+                          <Badge className="bg-green-100 text-green-800">
+                            {new Date(order.createdAt) > new Date(Date.now() - 24 * 60 * 60 * 1000) ? 'New' : 'Processing'}
+                          </Badge>
                         </div>
-                        <Badge className="bg-green-100 text-green-800">New</Badge>
+                        <p className="text-sm">
+                          {order.items?.length || 1} items - ₵{(order.total || 0).toFixed(2)}
+                        </p>
                       </div>
-                      <p className="text-sm">Laptop Pro x1 - ₵1,299.99</p>
-                    </div>
+                    ))}
                   </div>
                 </div>
               </CardContent>
